@@ -13,13 +13,13 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950">
+<body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950" data-msg-sent="{{ 'true' if msg_sent else 'false' }}">
 
     <!-- NAVIGATION -->
     <nav class="sticky top-0 z-40 backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80">
         <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <a href="#" class="flex items-center gap-2">
-                <img src="./static/logo.png" alt="Fourth the Analyst Logo" class="h-14 w-auto">
+                <img src="static\images\logo.png" alt="Fourth the Analyst Logo" class="h-14 w-auto">
             </a>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
                 <a href="#about" class="hover:text-emerald-400 transition">About</a>
@@ -60,7 +60,7 @@
     <section id="about" class="py-20 max-w-4xl mx-auto px-6 border-b border-slate-900">
         <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center">
             <div class="w-28 h-28 rounded-2xl overflow-hidden shadow-xl shrink-0 border-2 border-emerald-500/30">
-                <img src="./static/profile.jpg" alt="Fourth" class="w-full h-full object-cover object-top">
+                <img src="/static/images/profile.jpg" alt="Fourth" class="w-full h-full object-cover object-top">
             </div>
             <div>
                 <h2 class="text-2xl font-bold text-white mb-3">About Me</h2>
@@ -285,116 +285,100 @@
 
     <!-- INTAKE FORM MODAL -->
     <div id="intakeModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">✕</button>
-            <h3 class="text-2xl font-bold text-white mb-2">Project Request Form</h3>
-            <p class="text-sm text-slate-400 mb-6">Fill out this 60-second questionnaire. No sales call required.</p>
-            
-            <div id="successBanner" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl text-center text-sm font-medium mb-6">
-                🎉 Request received! Thank you, we will contact you back shortly.
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">✕</button>
+        <h3 class="text-2xl font-bold text-white mb-2">Project Request Form</h3>
+        <p class="text-sm text-slate-400 mb-6">Fill out this 60-second questionnaire. No sales call required.</p>
+        
+        <!-- Success Banner -->
+        <div id="successBanner" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl text-center text-sm font-medium mb-6">
+            🎉 Request received! Thank you, I will contact you back shortly.
+        </div>
+
+        <!-- Flask Server-Side Form -->
+        <form id="intakeForm" action="{{ url_for('contact') }}" method="POST" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Full Name *</label>
+                    <input type="text" name="name" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Email Address *</label>
+                    <input type="email" name="email" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="john@business.com">
+                </div>
             </div>
 
-            <form id="intakeForm" action="https://formsubmit.co/ajax/amadeofgiv@gmail.com" method="POST" class="space-y-4">
-                <input type="hidden" name="_captcha" value="false">
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Full Name *</label>
-                        <input type="text" name="name" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="John Doe">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Email Address *</label>
-                        <input type="email" name="email" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="john@business.com">
-                    </div>
-                </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Selected Package *</label>
+                <select id="packageSelect" name="package" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <option value="Starter ($50)">Starter Dashboard - $50</option>
+                    <option value="Pro Package ($100)">Pro Analytics Package - $100</option>
+                </select>
+            </div>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Selected Package *</label>
-                    <select id="packageSelect" name="selected_package" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-                        <option value="Starter ($50)">Starter Dashboard - $50</option>
-                        <option value="Pro Package ($100)">Pro Analytics Package - $100</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Business Name & Service Type</label>
+                <input type="text" name="business" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Local Retail Store / E-commerce">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Where do you currently track your data?</label>
+                <input type="text" name="file" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Excel, Google Sheets, CSV export">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">What is your biggest headache or question?</label>
+                <textarea name="message" rows="3" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Tracking weekly sales trends and inventory bottlenecks..."></textarea>
+            </div>
+            
+            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-xs text-emerald-300 flex items-start gap-2">
+                <span>🔒</span>
+                <p><strong>Privacy Guarantee:</strong> Your data will be used solely for this project, kept strictly confidential, and never disclosed to anyone.</p>
+            </div>
 
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Business Name & Service Type</label>
-                    <input type="text" name="business_info" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Local Retail Store / E-commerce">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Where do you currently track your data?</label>
-                    <input type="text" name="data_source" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Excel, Google Sheets, CSV export">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">What is your biggest headache or question?</label>
-                    <textarea name="core_problem" rows="3" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., Tracking weekly sales trends and inventory bottlenecks..."></textarea>
-                </div>
-                
-                <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-xs text-emerald-300 flex items-start gap-2">
-                    <span>🔒</span>
-                    <p><strong>Privacy Guarantee:</strong> Your data will be used solely for this project, kept strictly confidential, and never disclosed to anyone.</p>
-                </div>
-
-                <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold py-3 rounded-xl transition text-sm shadow-lg shadow-emerald-500/20">
-                    Send Request
-                </button>
-            </form>
+            <button type="submit" id="submitBtn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold py-3 rounded-xl transition text-sm shadow-lg shadow-emerald-500/20">
+                Send Request
+            </button>
+        </form>
+    </div>
+</div>
         </div>
     </div>
 
     <!-- JAVASCRIPT CONTROLS -->
+
     <script>
-    const intakeForm = document.getElementById('intakeForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const successBanner = document.getElementById('successBanner');
-
-    intakeForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const originalBtnText = submitBtn.innerText;
-        submitBtn.innerText = 'Sending...';
-        submitBtn.disabled = true;
-
-        const formData = new FormData(intakeForm);
-        const object = Object.fromEntries(formData);
-        const json = JSON.stringify(object);
-
-        try {
-            const response = await fetch(intakeForm.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: json
-            });
-
-            if (response.ok) {
-                intakeForm.reset();
+    // Read the Flask state from the body tag safely (no Jinja braces in script!)
+    const msgSent = document.body.getAttribute('data-msg-sent') === 'true';
+    console.log("Is msgSent true?", msgSent);
+    if (msgSent) {
+        window.addEventListener('load', function() {
+            openModal();
+            
+            const intakeForm = document.getElementById('intakeForm');
+            const successBanner = document.getElementById('successBanner');
+            
+            if (intakeForm && successBanner) {
                 intakeForm.classList.add('hidden');
                 successBanner.classList.remove('hidden');
-
-                setTimeout(() => {
-                    closeModal();
-                    intakeForm.classList.remove('hidden');
-                    successBanner.classList.add('hidden');
-                    submitBtn.innerText = originalBtnText;
-                    submitBtn.disabled = false;
-                }, 3500);
-            } else {
-                alert('Oops! There was a problem submitting your request. Please try again.');
-                submitBtn.innerText = originalBtnText;
-                submitBtn.disabled = false;
             }
-        } catch (error) {
-            alert('Connection error. Please check your network and try again.');
-            submitBtn.innerText = originalBtnText;
-            submitBtn.disabled = false;
-        }
-    });
-
+            // CLEAN THE URL: Removes ?msg_sent=true so a refresh won't re-trigger this!
+            window.history.replaceState({}, document.title, window.location.pathname);
+        });
+    }
+    
     function openModal(packageName) {
-        document.getElementById('intakeModal').classList.remove('hidden');
-        document.getElementById('intakeModal').classList.add('flex');
+        const modal = document.getElementById('intakeModal');
+        const intakeForm = document.getElementById('intakeForm');
+        const successBanner = document.getElementById('successBanner');
+
+        // ALWAYS reset the form to visible and hide the banner when opening fresh
+        if (intakeForm && successBanner) {
+            intakeForm.classList.remove('hidden');
+            successBanner.classList.add('hidden');
+            intakeForm.reset(); // Optional: clears out old input fields if desired
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         
         if (packageName) {
             const selectElem = document.getElementById('packageSelect');
